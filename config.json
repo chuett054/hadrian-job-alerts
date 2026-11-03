@@ -1,0 +1,20 @@
+{
+  "board_url": "https://api.ashbyhq.com/posting-api/job-board/hadrian-automation",
+  "title_include": [
+    "\\bproduct (manager|management|owner)\\b",
+    "\\bAPM\\b",
+    "\\btechnical program manager\\b",
+    "\\bTPM\\b"
+  ],
+  "title_exclude": [
+    "\\b(senior|sr\\.?|staff|principal|lead|director|head|vp|vice president|chief|group)\\b"
+  ],
+  "early_career_titles": [
+    "\\bintern(ship)?\\b",
+    "\\bnew grad(uate)?\\b",
+    "\\bassociate\\b",
+    "\\bearly career\\b",
+    "\\ball levels\\b"
+  ],
+  "max_required_years": 2
+}

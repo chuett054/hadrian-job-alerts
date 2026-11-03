@@ -1,0 +1,47 @@
+name: Check Hadrian jobs
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run tests
+        run: python -m unittest
+
+      - name: Find new roles
+        id: jobs
+        env:
+          NOTIFY_USER: ${{ github.repository_owner }}
+        run: python check_jobs.py
+
+      # The issue is opened by github-actions[bot], so the @mention emails the owner.
+      - name: Open issue
+        if: steps.jobs.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COUNT: ${{ steps.jobs.outputs.count }}
+        run: gh issue create --title "$COUNT new Hadrian role(s) match your filters" --body-file digest.md
+
+      # Runs after the issue so a failed notification is retried on the next run.
+      - name: Save seen roles
+        if: steps.jobs.outputs.count != '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add seen.json
+          git commit -m "Record notified roles"
+          git push
